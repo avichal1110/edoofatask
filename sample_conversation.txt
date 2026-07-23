@@ -1,0 +1,7 @@
+Counselor: Hello, thank you for reaching out.
+Student: Hi, I want to know the course fee and duration.
+Counselor: The course fee is 50,000 and the program runs for 6 months.
+Student: Do you provide scholarships?
+Counselor: We will share scholarship details once you register.
+Parent: Is there any installment option?
+Counselor: Yes, payment can be done in 2 installments.
