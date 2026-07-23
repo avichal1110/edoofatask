@@ -1,5 +1,6 @@
 import os
 import re
+import json
 from datetime import datetime
 from typing import List, Dict, Any, Tuple
 
@@ -358,19 +359,31 @@ class ConversationAnalysis:
             summary_lines.append(f"- {finding['title']} ({finding['severity']})")
         return "\n".join(summary_lines)
 
-    def push_to_google_sheet(self, report: Dict[str, Any], sheet_id: str) -> str:
+    def push_to_google_sheet(self, report: Dict[str, Any], sheet_id: str, credentials_file: Any = None) -> str:
         if gspread is None:
             raise RuntimeError("gspread is not installed. Install requirements with Google Sheets support.")
-
-        credentials_path = os.environ.get("GOOGLE_SHEETS_CREDENTIALS")
-        if not credentials_path:
-            raise RuntimeError("Environment variable GOOGLE_SHEETS_CREDENTIALS is not set.")
 
         scope = [
             "https://spreadsheets.google.com/feeds",
             "https://www.googleapis.com/auth/drive",
         ]
-        creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
+
+        credentials_path = os.environ.get("GOOGLE_SHEETS_CREDENTIALS")
+        creds = None
+
+        if credentials_file is not None:
+            content = credentials_file.read()
+            if isinstance(content, bytes):
+                content = content.decode("utf-8")
+            creds_dict = json.loads(content)
+            creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+        elif credentials_path:
+            creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_path, scope)
+        else:
+            raise RuntimeError(
+                "Google Sheets credentials not provided. Upload a JSON file or set GOOGLE_SHEETS_CREDENTIALS."
+            )
+
         client = gspread.authorize(creds)
         sheet = client.open_by_key(sheet_id)
         worksheet = sheet.sheet1

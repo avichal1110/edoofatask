@@ -26,7 +26,16 @@ def main():
         "Upload conversation files", type=["txt", "md", "csv"], accept_multiple_files=True
     )
 
-    google_sheet_id = st.text_input("Optional Google Sheet ID", help="If provided, findings will be pushed to this Google Sheet when " "credentials are configured.")
+    google_sheet_id = st.text_input(
+        "Optional Google Sheet ID",
+        help="If provided, findings will be pushed to this Google Sheet when credentials are configured.",
+    )
+    credentials_file = st.file_uploader(
+        "Upload Google service account JSON (optional)",
+        type=["json"],
+        help="Upload a service account JSON file to enable direct export without setting an environment variable.",
+    )
+
     if st.button("Run Audit"):
         if not uploaded_files:
             st.warning("Please upload at least one conversation file.")
@@ -56,7 +65,7 @@ def main():
 
         if google_sheet_id:
             try:
-                sheet_url = analyzer.push_to_google_sheet(report, google_sheet_id)
+                sheet_url = analyzer.push_to_google_sheet(report, google_sheet_id, credentials_file=credentials_file)
                 st.info(f"Findings pushed to Google Sheet: {sheet_url}")
             except Exception as exc:
                 st.error(f"Google Sheets update failed: {exc}")
