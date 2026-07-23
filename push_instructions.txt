@@ -1,0 +1,9 @@
+1. Create a new GitHub repository on github.com.
+2. Copy the repo URL.
+3. In PowerShell:
+   cd c:\Users\Achint Kumar\Desktop\edoofa
+   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
+   git branch -M main
+   git push -u origin main
+
+If GitHub asks for username/password, use your GitHub credentials or PAT.
